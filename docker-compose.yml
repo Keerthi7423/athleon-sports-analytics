@@ -1,0 +1,56 @@
+# Athleon Multi-Service Orchestration
+version: '3.8'
+
+services:
+  # 1. PostgreSQL - Primary Store
+  postgres:
+    image: postgres:15-alpine
+    container_name: athleon_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_password
+      POSTGRES_DB: athleon_fatigue
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 2. Redis - Real-time Performance Caching
+  redis:
+    image: redis:7-alpine
+    container_name: athleon_redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 3. Fatigue Service - Sports Analytics Microservice
+  fatigue-service:
+    build:
+      context: ./backend/fatigue-service
+      dockerfile: Dockerfile
+    container_name: fatigue_service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - ./backend/fatigue-service/.env
+    environment:
+      DATABASE_URL: "postgresql://postgres:postgres_password@postgres:5432/athleon_fatigue?schema=public"
+      REDIS_HOST: redis
+    ports:
+      - "4001:4001"
+    restart: always
+
+volumes:
+  pgdata:

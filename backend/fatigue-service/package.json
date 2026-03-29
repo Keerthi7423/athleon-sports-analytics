@@ -1,0 +1,33 @@
+{
+  "name": "athleon-fatigue-service",
+  "version": "1.0.0",
+  "description": "Calculates and monitors athlete fatigue levels in real-time.",
+  "main": "src/app.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "jest",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.10.x",
+    "express": "^4.18.x",
+    "cors": "^2.8.x",
+    "dotenv": "^16.4.x",
+    "express-validator": "^7.0.x",
+    "helmet": "^7.1.x",
+    "ioredis": "^5.3.x",
+    "jsonwebtoken": "^9.0.x",
+    "morgan": "^1.10.x",
+    "socket.io": "^4.7.x",
+    "winston": "^3.11.x"
+  },
+  "devDependencies": {
+    "jest": "^29.7.x",
+    "nodemon": "^3.1.x",
+    "prisma": "^5.10.x",
+    "supertest": "^6.3.x"
+  }
+}

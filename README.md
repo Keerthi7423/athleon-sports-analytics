@@ -107,3 +107,89 @@ Athleon is a microservices-based real-time sports analytics platform that uses a
 ## 👨‍💻 Author
 
 Keerthi Kumar V
+
+# Athleon: Production-Grade Sports Analytics Platform
+
+Athleon is a performance monitoring platform for athletes, leveraging real-time telemetry and microservices architecture.
+
+## Microservices Stack
+- **Fatigue Service**: Monitors and calculates fatigue via Heart Rate, HRV, and Sleep data.
+  - Node.js (Express), Prisma (PostgreSQL), IORedis (Caching), Socket.io (Streaming).
+
+## 🚀 Getting Started
+
+### 1. Prerequisites
+- Docker & Docker Compose
+- Node.js 20+ (for local development)
+- PostgreSQL & Redis (if running locally)
+
+### 2. Local Installation
+1. Clone the repository and move to the fatigue-service.
+   ```bash
+   cd backend/fatigue-service
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Set up environment variables in `.env` (refer to `.env.example`).
+4. Generate Prisma Client:
+   ```bash
+   npx prisma generate
+   ```
+
+### 3. Running with Docker (Recommended)
+Launch the entire system including Database and Redis:
+```bash
+docker-compose up --build
+```
+
+## 📡 API Endpoints (Fatigue Service)
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `POST` | `/api/v1/athletes` | Register a new athlete for monitoring. |
+| `GET` | `/api/v1/athletes` | List all athletes and their latest metrics. |
+| `POST` | `/api/v1/fatigue/telemetry` | Submit raw telemetry and update fatigue. |
+| `GET` | `/api/v1/fatigue/status/:id` | Get current fatigue score for an athlete. |
+
+## 🕹️ Real-time Communication (Socket.io)
+Clients (Dashboards) can listen for real-time updates:
+- **Event**: `fatigue_update`
+- **Payload**: `{ athleteId, score, timestamp, alert }`
+
+## 🧪 Testing Steps
+
+### 1. Run Unit Tests
+Test the core fatigue engine logic:
+```bash
+cd backend/fatigue-service
+npm test
+```
+
+### 2. Manual API Test (Using cURL)
+1. Register Athlete:
+   ```bash
+   curl -X POST http://localhost:4001/api/v1/athletes \
+   -H "Content-Type: application/json" \
+   -d '{"name": "James Rodriguez", "team": "Athleon FC"}'
+   ```
+2. Submit Telemetry (Requires JWT in actual production):
+   ```bash
+   curl -X POST http://localhost:4001/api/v1/fatigue/telemetry \
+   -H "Content-Type: application/json" \
+   -d '{"athleteId": "generated-uuid", "heartRate": 178, "variability": 30, "sleepScore": 45}'
+   ```
+
+## 🏗️ Folder Structure
+```bash
+athleon/
+├── backend/
+│   ├── api-gateway/      - Nginx or Node Gateway
+│   ├── auth-service/     - Identity Management
+│   ├── fatigue-service/  - Core Calculation & Storage
+│   └── emi-service/      - Muscle Signal Processing
+├── docker/
+├── docs/
+└── docker-compose.yml
+```

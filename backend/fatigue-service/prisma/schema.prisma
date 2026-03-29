@@ -1,0 +1,38 @@
+// d:\PROJECT\Athleon\backend\fatigue-service\prisma\schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Athlete {
+  id        String   @id @default(uuid())
+  name      String
+  team      String
+  metrics   FatigueMetric[]
+  status    AthleteStatus @default(ACTIVE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model FatigueMetric {
+  id             String   @id @default(uuid())
+  athleteId      String
+  athlete        Athlete  @relation(fields: [athleteId], references: [id])
+  score          Float    // 0.0 (fresh) to 10.0 (exhausted)
+  heartRate      Int
+  variability    Float    // HRV
+  sleepScore     Int
+  recordedAt     DateTime @default(now())
+}
+
+enum AthleteStatus {
+  ACTIVE
+  INJURED
+  REHAB
+  RESTING
+}
